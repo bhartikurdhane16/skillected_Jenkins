@@ -1,0 +1,168 @@
+maven: it is a build tool
+
+==> Maven installation
+--------------------------------------------------------
+# java --version  -----dependancy for maven  
+
+Now, refer maven in 5 minute of installation documentation
+Step 1: install meven
+
+# wget https://dlcdn.apache.org/maven/maven-3/3.9.6/binaries/apache-maven-3.9.6-bin.tar.gz
+# sudo tar -xvzf apache-maven-3.9.6-bin.tar.gz
+# sudo mv apache-maven-3.9.6 /opt/
+# cd /opt/apache-maven/bin/mvn
+
+Now add the mvn command in enviorment
+# sudo vim /etc/profile
+  export PATH=$PATH:'/opt/apache-maven-3.9.6/bin/'   ----here adding enxironment for meven
+# source /etc/profile
+# bash
+# mvn --version
+=======================================================================================================
+
+Maven command Syntax : mvn goal argument
+                       aws sub-command  extra parameter
+=======================================================================================================
+
+==> Create a Maven project for Example purpose
+---------------------------------------------------
+
+Syntax: mvn archetype:generate
+        command (libreary):(The goal need to download from liabrary)
+
+archetype: it is maven plugin responsible for generating project from templete called archetype , prasent in libreary
+generate: its a goal/task for the archetype, which tell maven to generate project based on specific archetype
+
+mvn archetype:generate -DgroupId=com.mycompany.app -DartifactId=my-app -DarchetypeArtifactId=maven-archetype-quickstart -DarchetypeVersion=1.4 -DinteractiveMode=false
+
+# mvn archetype:generate -DgroupId=com.studentapp-ui.app -DartifactId=studentapp-ui-app -DarchetypeArtifactId=maven-archetype-quickstart -DarchetypeVersion=1.4 -DinteractiveMode=false
+# cd studentapp-ui-app
+# tree -------(if not tree not prasent then install tree #sudo apt install tree) 
+( studentapp-up is student databasde application we used here)
+
+Note: Developer decide the build tool, here directory structre is created for java based application from here we started the Applicaiton development lifecycle
+
+1. First directory has define
+2. Then we write the application/code
+eg. we can check studentapp also
+
+## our-project has created Example completed
+==============================================================================================================================================================================================================
+
+## Maven Lifecycle for our project:
+----------------------------------
+Basically it a process collection of maven phases
+
+Mven lifecycle Type:
+1. Default lifecycle - by default behavior of lifecycle
+                     - it handles the build process of the project , it includ phases like compiling the source code , packaging it into distributable formate( ex JAR , WAR) runnig test etc.
+                     - it include compile, test, package, install, and deploy phases.
+2. Clean Lifecycle - It discard old build & ensure project is in clean state befour compile again 
+                     - include clean phase
+
+3. Site lifecycle  - It helps to generate project documentation & report.
+                   - also deploy generated doc on web server.
+-------------------------------------------------------
+
+Maven Phases: --> Collection of goals/libreary
+                 - represents a stage in the lifecycle.
+Default Phases
+------------------------------------------
+1. validate: validate the project is correct and all necessary information is available
+2. compile: compile the source code of the project (Syntax checks, Human redable lamgaue convert m/c readable)
+3. test: test the compiled source code using a suitable unit testing framework. These tests should not require the code be packaged or deployed (test)
+4. package: take the compiled code and package it in its distributable format, such as a JAR. (Pkg created)
+5. integration-test: process and deploy the package if necessary into an environment where integration tests can be run (integration of enviorment)
+6. verify: run any checks to verify the package is valid and meets quality criteria (all criteria meet or not ?)
+7. install: install the package into the local repository, for use as a dependency in other projects locally (artifact install, webapp/student.war)
+8. deploy: done in an integration or release environment, copies the final package to the remote repository for sharing with other developers and projects. (Applciaiotn run/deploy in some platform)
+
+
+Clean Phase:
+-------------------
+1. cleans up artifacts created by prior builds
+   ( artifacts: an artifact refers to a file or collection of files that are produced during the build process. Artifacts typically represent the output of project build process.
+     artifact type:
+     1. WAR (Web archive): A WAR file is a package file format used to distribute a web application. 
+                          - It contains HTML, JavaServer Pages (JSP), Servlets, Java classes, XML files, static web resources, and other resources necessary to run a web application. )
+     2 JAR (java archive) : A JAR file is a package file format typically used to aggregate Java class files, resources, and metadata into a single file. 
+                          - JAR files are commonly used to distribute Java libraries and applications.
+     3. EAR (enterprise archive):An EAR file is a package file format used to distribute Java Enterprise Edition (Java EE) applications. 
+                          - It contains multiple WAR files, JAR files, and configuration files necessary to deploy and run a Java EE application on an application server.
+     4. POM (Project Object Model) file: it is not exactly an artifact in the traditional sense,
+                         -  the POM file (pom.xml) is an XML file that defines the project configuration, dependencies, and build settings. 
+                         - It serves as the project's descriptor and is essential for building and managing the project with Maven.)
+
+Site Phase:
+-------------------
+1. site: generates site documentation for this project
+
+==============================================================================================================================================================================================================
+
+Example on staging:
+1. Get clone of studentapp-ui Application repository from developer (we used thirdparty app) --> install maven
+#cd /opt/apache maven/bin/
+# mkdir app_dir    
+#git clone < student app repo ssh url>
+# cd studentapp-ui
+# mvn package ( Build the package)
+# ls /studentapp-ui/target/<new-artifact-created>.war
+
+==============================================================================================================================================================================================================
+
+Pom.xml
+----------
+1. While building the code, if we required any dependency it will collect it from the pom.xml file.
+2. pom.xml file contains the all required information, libreary, plugging, dependancy,
+3. Developer wrote the pom.xml
+4. we can also add maven dependancy here as per requirment from maven repository.
+==============================================================================================================================================================================================================
+
+Jenkins-App: Global Tool configuration ( here we are configuring maven in jenkins)
+----------------------------------------
+here we are adding the maven executable command path to provide the maven enviorment in pipeline
+# Add Maven installation
+    Name = mvn
+    Home_Directory =  /opt/apache-maven-3.9.6
+note: firstly install maven intigration / maven plugin if not prasent.
+      - blue ocen plugin for dashboard view
+
+Back to mvn server: ==>
+----------------------------
+
+# cd /studentapp-ui    ---present in /opt/apache maven-3.9.6/bin
+# mvn clean package    ------ here we got target dir 
+===> add pull stage in pipeline (& use in vs code whre pipeline creating)
+ pipeline----> git url--->repo url----> path of pipeline(studentapp.ui-pipeline.groovy)--->pipeline syntax generator--->git ---> application repo url (ie studentapp.ui data where pom.xpm present)--->use syntax in main pipeline pull stage
+
+==> similarly , Now add the build stage in our pipeline
+
+Pipeline syntax generator: 
+    sh: shell Script
+    # mvn clean package  --> generate pipeline Script
+
+    sh 'mvn clean package'   [o/p] --> Add in build Script
+
+('build')
+    (sh '/opt/apache-maven/bin/mvn clean package')    -----use in build stage of pipeline
+ 
+##################################################################################################################
+
+Error:
+[ERROR] Failed to execute goal org.apache.maven.plugins:maven-war-plugin:2.6:war (default-war)
+on project studentapp: Execution default-war of goal org.apache.maven.plugins:maven-war-plugin:2.6:war
+failed: Unable to load the mojo 'war' in the plugin 'org.apache.maven.plugins:maven-war-plugin:2.6' 
+due to an API incompatibility: org.codehaus.plexus.component.repository.exception.ComponentLookupException: null
+
+==> .mojo is not supported by Java-17, so we need to install java-11 or below.
+
+# java --version
+# sudo apt update
+# sudo apt install openjdk-11-jdk
+
+To check diffrent version of java or which Java version is curretnly in used. To ensure that use below command.
+# sudo update-alternatives --config java   -----using alternate java 11 version 
+# now to select the exact Java 11 version and Enter.
+# java --version   ... It should be java 11 running
+Now, Build it again.
+############################s
